@@ -322,6 +322,17 @@ CARROCERIAS   = bundle["TODAS_CARROCERIAS"]
 COMBUSTIBLES  = bundle["TODOS_COMBUSTIBLES"]
 COLORES       = bundle["TODOS_COLORES"]
 
+# Catalogos en cascada por modelo (nuevos en v2)
+CAT_TRANS = bundle.get("catalogo_trans_por_modelo", {})
+CAT_TRAC  = bundle.get("catalogo_trac_por_modelo",  {})
+CAT_CARR  = bundle.get("catalogo_carr_por_modelo",  {})
+CAT_COMB  = bundle.get("catalogo_comb_por_modelo",  {})
+
+def opts_modelo(marca, modelo, catalogo, fallback):
+    key = (marca, modelo)
+    vals = catalogo.get(key, fallback)
+    return [v for v in vals if str(v).strip() not in ("", "Nan", "nan")] or fallback
+
 # ── Helpers graficos ──────────────────────────────────────────
 def shap_a_clp(sv, base):
     b = np.expm1(base)
@@ -380,7 +391,7 @@ def grafico(efectos, etiquetas, titulo):
 # ══════════════════════════════════════════════════════════════
 st.markdown("""
 <div class="hero">
-  <div class="hero-tag">Magister en Negocios Digitales · UDP · 2026</div>
+  <div class="hero-tag">Magister en Negocios Digitales · UDP · 2025</div>
   <h1 class="hero-title">
     Interpretabilidad de modelos predictivos<br>
     aplicados a la valoracion de vehiculos usados en Chile
@@ -554,18 +565,33 @@ with st.container():
 
     with col1:
         marca  = st.selectbox("🚗 Marca", MARCAS)
-        modelo = st.selectbox("🔧 Modelo", CAT_MODELOS.get(marca, []))
-        año    = st.number_input("📅 Año", min_value=1990,
-                                 max_value=2025, value=2019, step=1)
-        km     = st.number_input("📏 Kilometraje", min_value=0,
-                                 max_value=500000, value=60000, step=5000)
-        transmision = st.selectbox("⚙️ Transmision",  TRANSMISIONES)
-        traccion    = st.selectbox("🔄 Traccion",     TRACCIONES)
+        modelos_disp = CAT_MODELOS.get(marca, [])
+        modelo = st.selectbox("🔧 Modelo", modelos_disp)
+
+        # Cascada: transmision filtrada por marca+modelo
+        trans_disp = opts_modelo(marca, modelo, CAT_TRANS, TRANSMISIONES)
+        transmision = st.selectbox("⚙️ Transmision", trans_disp)
+
+        # Cascada: traccion filtrada por marca+modelo
+        trac_disp = opts_modelo(marca, modelo, CAT_TRAC, TRACCIONES)
+        traccion = st.selectbox("🔄 Traccion", trac_disp)
+
+        # Cascada: carroceria filtrada por marca+modelo
+        carr_disp = opts_modelo(marca, modelo, CAT_CARR, CARROCERIAS)
+        carroceria = st.selectbox("🚙 Carroceria", carr_disp)
 
     with col2:
-        carroceria  = st.selectbox("🚙 Carroceria",  CARROCERIAS)
-        combustible = st.selectbox("⛽ Combustible", COMBUSTIBLES)
-        color       = st.selectbox("🎨 Color",       COLORES)
+        año = st.number_input("📅 Año", min_value=1990,
+                              max_value=2025, value=2019, step=1)
+        km  = st.number_input("📏 Kilometraje", min_value=0,
+                              max_value=500000, value=60000, step=5000)
+
+        # Cascada: combustible filtrado por marca+modelo
+        comb_disp = opts_modelo(marca, modelo, CAT_COMB, COMBUSTIBLES)
+        combustible = st.selectbox("⛽ Combustible", comb_disp)
+
+        color = st.selectbox("🎨 Color", COLORES)
+
         paises_disp   = CAT_PAIS.get(marca, ["Otros/desconocido"])
         pais          = st.selectbox("🌍 Pais origen", paises_disp)
         regiones_disp = CAT_REGION.get(pais, ["No aplica"])
@@ -680,6 +706,10 @@ st.markdown("""
 <div class="footer">
   <strong style="color:#4B5580">AutoTasar Chile</strong><br>
   Investigacion academica · Magister en Negocios Digitales<br>
-  Universidad Diego Portales · Santiago, Chile · 2026<br><br>
+  Universidad Diego Portales · Santiago, Chile · 2025<br><br>
+  <span style="color:#2D3A55">
+  Lundberg & Lee (2017) · Ribeiro et al. (2016) · Chen & Guestrin (2016) ·
+  Nandan & Ghosh (2023) · Bergmann & Feuerriegel (2025)
+  </span>
 </div>
 """, unsafe_allow_html=True)
