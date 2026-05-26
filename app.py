@@ -351,7 +351,7 @@ def grafico(efectos, etiquetas, titulo):
     ax.barh(etiquetas[::-1], efectos[::-1],
             color=colores[::-1], edgecolor=DARK,
             linewidth=0.4, height=0.65)
-    rng = max(abs(efectos)) if len(efectos) else 1
+    rng = float(np.max(np.abs(efectos))) if len(efectos) else 1
     off = rng * 0.012
     for i, val in enumerate(efectos[::-1]):
         ax.text(val + (off if val >= 0 else -off), i,
