@@ -391,7 +391,7 @@ def grafico(efectos, etiquetas, titulo):
 # ══════════════════════════════════════════════════════════════
 st.markdown("""
 <div class="hero">
-  <div class="hero-tag">Magister en Negocios Digitales · UDP · 2025</div>
+  <div class="hero-tag">Magister en Negocios Digitales · UDP · 2026</div>
   <h1 class="hero-title">
     Interpretabilidad de modelos predictivos<br>
     aplicados a la valoracion de vehiculos usados en Chile
@@ -706,10 +706,6 @@ st.markdown("""
 <div class="footer">
   <strong style="color:#4B5580">AutoTasar Chile</strong><br>
   Investigacion academica · Magister en Negocios Digitales<br>
-  Universidad Diego Portales · Santiago, Chile · 2025<br><br>
-  <span style="color:#2D3A55">
-  Lundberg & Lee (2017) · Ribeiro et al. (2016) · Chen & Guestrin (2016) ·
-  Nandan & Ghosh (2023) · Bergmann & Feuerriegel (2025)
-  </span>
+  Universidad Diego Portales · Santiago, Chile · 2026<br><br>
 </div>
 """, unsafe_allow_html=True)
