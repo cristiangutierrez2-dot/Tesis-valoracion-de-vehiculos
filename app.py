@@ -280,8 +280,10 @@ def cargar_todo():
         bundle = pickle.load(f)
 
     xgb   = bundle["xgb"]
-    ENC   = bundle["ENCODING_MAPS"]
-    GM    = bundle["GLOBAL_MEAN"]
+    # Convertir a dict puro por si viene como pd.Series
+    ENC = {c: dict(v) if hasattr(v, "items") else v 
+           for c, v in bundle["ENCODING_MAPS"].items()}
+    GM = float(bundle["GLOBAL_MEAN"])
     FEATS = bundle["FEATURES_CAT"]
     ALL   = ["año", "kilometraje"] + FEATS
 
@@ -292,7 +294,7 @@ def cargar_todo():
         vec = [float(rng.integers(2005, 2024)),
                float(rng.integers(10000, 200000))]
         for c in FEATS:
-            vals = list(bundle["ENCODING_MAPS"][c].values())
+            vals = list(ENC[c].values())
             vec.append(float(rng.choice(vals)))
         rows.append(vec)
     X_synt = np.array(rows)
